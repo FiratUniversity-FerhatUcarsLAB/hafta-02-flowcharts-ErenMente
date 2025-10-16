@@ -1,0 +1,93 @@
+digraph Hospital_System_Flowchart {
+    // Grafik ayarları
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial"];
+
+    // --- Başlangıç ve Kimlik Doğrulama ---
+    Start [label="1. TC Kimlik No Giriniz", shape=ellipse, style=filled, fillcolor=khaki];
+    ValidateTCKN [label="2. TCKN Doğru mu?", shape=diamond, style=filled, fillcolor=lightyellow];
+    
+    // --- Ana Menü ---
+    MainMenu [label="3. Eylem Seçimi\n1-Randevu Al | 2-Test Sonuçları", style=filled, fillcolor=beige];
+    CheckChoice [label="4. Seçim Kontrolü", shape=diamond, style=filled, fillcolor=lightyellow];
+
+    // --- Randevu Modülü (Grup 1) ---
+    subgraph cluster_Appointment {
+        label = "Randevu Modülü";
+        style=filled;
+        color=lightgrey;
+        node [fillcolor=azure];
+
+        ChooseClinic [label="5. Poliklinik Seç"];
+        ChooseDoctor [label="6. Doktor Seç"];
+        CheckDoctorChoice [label="7. Geri mi?", shape=diamond];
+        ChooseTime [label="8. Müsait Saat Seç"];
+        CheckTimeChoice [label="9. Geri mi?", shape=diamond];
+        ConfirmAppointment [label="10. Randevuyu Onayla?", shape=diamond];
+        SaveAppointment [label="11. Randevuyu Kaydet"];
+        AppointmentSuccess [label="12. Randevu Başarılı\n(SMS Gönderilir)", shape=box, style=filled, fillcolor=lightgreen];
+    }
+
+    // --- Test Sonuçları Modülü (Grup 2) ---
+    subgraph cluster_Results {
+        label = "Test Sonuçları Modülü";
+        style=filled;
+        color=lightgrey;
+        node [fillcolor=honeydew];
+
+        CheckPatientTests [label="13. Hastanın Testlerini Kontrol Et"];
+        IsTestProcessed [label="14. Test İşlendi mi?", shape=diamond];
+        IsResultApproved [label="15. Sonuç Onaylandı mı?", shape=diamond];
+        DisplayResults [label="16. Sonuçları Görüntüle"];
+        AskPDF [label="17. PDF İndirilsin mi?", shape=diamond];
+        DownloadPDF [label="18. PDF İndiriliyor..."];
+        
+        WaitMessage1 [label="Test Laboratuvarda İşlemde", shape=box, style=filled, fillcolor=moccasin];
+        WaitMessage2 [label="Sonuçlar Doktor Onayı Bekliyor", shape=box, style=filled, fillcolor=moccasin];
+    }
+
+    // --- Bitiş ve Döngü ---
+    AskAnotherOp [label="19. Başka İşlem?", shape=diamond, style=filled, fillcolor=beige];
+    Logout [label="20. Oturum Kapatıldı", shape=ellipse, style=filled, fillcolor=khaki];
+
+    // --- Akış Okları ---
+    // Giriş ve Menü
+    Start -> ValidateTCKN;
+    ValidateTCKN:s -> MainMenu [label="Evet"];
+    ValidateTCKN:w -> Start:w [label="Hayır (Hatalı Giriş)"];
+    MainMenu -> CheckChoice;
+    CheckChoice -> ChooseClinic [label="1-Randevu"];
+    CheckChoice -> CheckPatientTests [label="2-Sonuç"];
+    
+    // Randevu Modülü Akışı
+    ChooseClinic -> ChooseDoctor;
+    ChooseDoctor -> CheckDoctorChoice;
+    CheckDoctorChoice -> ChooseClinic [label="Evet (9'a bastı)"];
+    CheckDoctorChoice -> ChooseTime [label="Hayır"];
+    ChooseTime -> CheckTimeChoice;
+    CheckTimeChoice -> ChooseDoctor [label="Evet (9'a bastı)"];
+    CheckTimeChoice -> ConfirmAppointment [label="Hayır"];
+    ConfirmAppointment -> SaveAppointment [label="Evet", color=green];
+    ConfirmAppointment -> ChooseClinic [label="Hayır", color=red, style=dashed];
+    SaveAppointment -> AppointmentSuccess;
+    AppointmentSuccess -> AskAnotherOp;
+
+    // Test Sonuçları Modülü Akışı
+    CheckPatientTests -> IsTestProcessed;
+    IsTestProcessed -> IsResultApproved [label="Evet", color=green];
+    IsTestProcessed -> WaitMessage1 [label="Hayır", color=red];
+    IsResultApproved -> DisplayResults [label="Evet", color=green];
+    IsResultApproved -> WaitMessage2 [label="Hayır", color=red];
+    DisplayResults -> AskPDF;
+    AskPDF -> DownloadPDF [label="Evet"];
+    AskPDF -> AskAnotherOp [label="Hayır", style=dashed];
+    DownloadPDF -> AskAnotherOp;
+    WaitMessage1 -> AskAnotherOp;
+    WaitMessage2 -> AskAnotherOp;
+
+    // Ana Döngü
+    AskAnotherOp:s -> MainMenu [label="Evet"];
+    AskAnotherOp:e -> Logout:e [label="Hayır"];
+    Logout -> Start [label="Yeni Oturum"];
+}
