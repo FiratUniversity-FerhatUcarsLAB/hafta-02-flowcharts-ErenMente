@@ -1,0 +1,64 @@
+Muhammet Eren Mente
+öğr no:250542026
+
+  digraph SmartHome_Security_Flowchart {
+    // Grafik ayarları
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial"];
+
+    // --- Başlangıç ve Ana Döngü ---
+    IsSystemActive [label="1. Sistem Aktif mi?", shape=diamond, style=filled, fillcolor=khaki];
+    ReadSensors [label="2. Sensörleri Oku (Sürekli Döngü)", style=filled, fillcolor=beige];
+    DetectThreat [label="3. Tehdit Algılandı mı?\n(Hareket veya Kapı/Pencere)", shape=diamond, style=filled, fillcolor=lightyellow];
+
+    // --- Tehdit Müdahale Süreci ---
+    ActivateCameras [label="4. Kameraları Aktive Et"];
+    CheckOwnerLocation [label="5. Ev Sahibinin Konumunu Kontrol Et"];
+    IsOwnerHome [label="6. Ev Sahibi Evde mi? (Yanlış Alarm)", shape=diamond, style=filled, fillcolor=lightyellow];
+    FalseAlarm [label="7. Yanlış Alarm! Sıfırla.", shape=box, style=filled, fillcolor=lightgreen];
+    
+    // --- Gerçek Alarm Süreci ---
+    SetAlarmLevel [label="8. Alarm Seviyesini Ayarla (1-2-3)"];
+    SendNotifications [label="9. Bildirim Gönder (SMS, App, E-posta)"];
+    Wait30s [label="10. 30 Saniye Bekle", shape=ellipse, style=dashed];
+    RecheckSensors [label="11. Sensörleri Tekrar Kontrol Et"];
+    IsThreatOngoing [label="12. Tehdit Devam Ediyor mu?", shape=diamond, style=filled, fillcolor=orange];
+    ThreatGone [label="13. Tehdit Ortadan Kalktı. Sıfırla.", shape=box, style=filled, fillcolor=lightgreen];
+    EscalateAlarm [label="14. Alarmı Yükselt (Siren, Yetkililer)", shape=box, style=filled, fillcolor=salmon];
+    
+    // --- Manuel Müdahale ---
+    WaitForUser [label="15. Kullanıcı Komutu Bekle", style=dashed, shape=ellipse];
+    CheckDisableCmd [label="16. Devre Dışı Bırakıldı mı?", shape=diamond, style=filled, fillcolor=lightyellow];
+    SystemDisabled [label="17. Sistem Devre Dışı Bırakıldı. Sıfırla.", shape=box, style=filled, fillcolor=lightgreen];
+
+    // --- Akış Okları ---
+    // Ana Döngü
+    IsSystemActive -> ReadSensors [label="Evet"];
+    IsSystemActive -> IsSystemActive [label="Hayır"];
+    ReadSensors -> DetectThreat;
+    DetectThreat -> ReadSensors [label="Hayır (Güvende)"];
+    
+    // Tehdit Algılama ve Yanlış Alarm Kontrolü
+    DetectThreat -> ActivateCameras [label="Evet (Tehdit Var!)", color=red];
+    ActivateCameras -> CheckOwnerLocation;
+    CheckOwnerLocation -> IsOwnerHome;
+    IsOwnerHome -> FalseAlarm [label="Evet", color=green];
+    IsOwnerHome -> SetAlarmLevel [label="Hayır (Gerçek Tehdit!)", color=red];
+    FalseAlarm -> ReadSensors;
+
+    // Gerçek Alarm Akışı
+    SetAlarmLevel -> SendNotifications -> Wait30s -> RecheckSensors -> IsThreatOngoing;
+    IsThreatOngoing -> ThreatGone [label="Hayır", color=green];
+    IsThreatOngoing -> EscalateAlarm [label="Evet", color=red];
+    ThreatGone -> ReadSensors;
+    
+    // Manuel Müdahale Akışı
+    EscalateAlarm -> WaitForUser;
+    WaitForUser -> CheckDisableCmd;
+    CheckDisableCmd -> WaitForUser [label="Hayır"];
+    CheckDisableCmd -> SystemDisabled [label="Evet"];
+    SystemDisabled -> ReadSensors;
+}
+
+  
