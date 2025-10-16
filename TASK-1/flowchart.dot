@@ -1,0 +1,84 @@
+digraph ATM_Flowchart {
+    // Grafik ayarları
+    rankdir=TB; // Akışı yukarıdan aşağıya (Top to Bottom) ayarla
+    node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial"];
+
+    // Başlangıç ve Temel Akış Düğümleri
+    Start [label="1. Kartınızı giriniz", shape=ellipse, style=filled, fillcolor=khaki];
+    CheckCard [label="2. Kart takılı mı?", shape=diamond, style=filled, fillcolor=lightyellow];
+    ResetCounter [label="3. sayac = 0"];
+    EnterPIN [label="4. PIN giriniz"];
+    CheckPIN [label="5. PIN Doğru mu?", shape=diamond, style=filled, fillcolor=lightyellow];
+    
+    // PIN Hata Bloğu
+    IncrementCounter [label="6. sayac++"];
+    CheckCounter [label="7. sayac < 3?", shape=diamond, style=filled, fillcolor=lightyellow];
+    WrongPINMsg [label="8. 'Yanlış PIN. Tekrar deneyin.'"];
+    BlockCard [label="9. Kart Bloke Oldu!", shape=box, style=filled, fillcolor=salmon];
+
+    // Ana İşlem Bloğu
+    QueryBalance [label="10. Bakiye Sorgula"];
+    EnterAmount [label="11. Tutar Giriniz"];
+    CheckBalance [label="12. Bakiye Yeterli mi?", shape=diamond, style=filled, fillcolor=lightyellow];
+    InsufficientBalanceMsg [label="13. 'Yetersiz Bakiye'", shape=box, style=filled, fillcolor=moccasin];
+    CheckAmountMultiple [label="14. Tutar 20'nin katı mı?", shape=diamond, style=filled, fillcolor=lightyellow];
+    WrongAmountMsg [label="15. 'Tutar 20'nin katı olmalı'", shape=box, style=filled, fillcolor=moccasin];
+    QueryLimit [label="16. Günlük Limiti Sorgula"];
+    CheckLimit [label="17. Limit Yeterli mi?", shape=diamond, style=filled, fillcolor=lightyellow];
+    LimitExceededMsg [label="18. 'Günlük Limiti Aştınız'", shape=box, style=filled, fillcolor=moccasin];
+
+    // Para Çekme ve Sonlandırma Bloğu
+    UpdateBalance [label="19. Bakiye Güncelle"];
+    UpdateLimit [label="20. Günlük Limit Güncelle"];
+    AskReceipt [label="21. Fiş ister misiniz?", shape=diamond, style=filled, fillcolor=lightyellow];
+    PrintReceipt [label="22. Fişi Yazdır"];
+    DispenseCash [label="23. Parayı Ver", shape=box, style=filled, fillcolor=lightgreen];
+    AskAnotherOp [label="24. Başka İşlem?", shape=diamond, style=filled, fillcolor=lightyellow];
+    EndMessage [label="25. İyi günler / Kart İade", shape=ellipse, style=filled, fillcolor=khaki];
+
+    // Kenarlar (Oklar ile Akış)
+    Start -> CheckCard;
+    CheckCard -> ResetCounter [label="Evet"];
+    CheckCard -> Start [label="Hayır"];
+
+    // PIN Kontrol Akışı
+    ResetCounter -> EnterPIN;
+    EnterPIN -> CheckPIN;
+    CheckPIN -> QueryBalance [label="Doğru", color=green];
+    CheckPIN -> IncrementCounter [label="Yanlış", color=red];
+    IncrementCounter -> CheckCounter;
+    CheckCounter -> WrongPINMsg [label="Evet"];
+    WrongPINMsg -> EnterPIN;
+    CheckCounter -> BlockCard [label="Hayır (3 Deneme Bitti)", color=red];
+    BlockCard -> EndMessage;
+
+    // Tutar Kontrol Akışı
+    QueryBalance -> EnterAmount;
+    EnterAmount -> CheckBalance;
+    CheckBalance -> CheckAmountMultiple [label="Evet", color=green];
+    CheckBalance -> InsufficientBalanceMsg [label="Hayır", color=red];
+    InsufficientBalanceMsg -> EnterAmount;
+    
+    CheckAmountMultiple -> QueryLimit [label="Evet", color=green];
+    CheckAmountMultiple -> WrongAmountMsg [label="Hayır", color=red];
+    WrongAmountMsg -> EnterAmount;
+
+    QueryLimit -> CheckLimit;
+    CheckLimit -> UpdateBalance [label="Evet", color=green];
+    CheckLimit -> LimitExceededMsg [label="Hayır", color=red];
+    LimitExceededMsg -> EnterAmount;
+
+    // Başarılı İşlem Akışı
+    UpdateBalance -> UpdateLimit;
+    UpdateLimit -> AskReceipt;
+    AskReceipt -> PrintReceipt [label="Evet"];
+    AskReceipt -> DispenseCash [label="Hayır", style=dashed];
+    PrintReceipt -> DispenseCash;
+    DispenseCash -> AskAnotherOp;
+    
+    // Döngü ve Bitiş
+    AskAnotherOp -> ResetCounter [label="Evet (Yeni İşlem)"];
+    AskAnotherOp -> EndMessage [label="Hayır"];
+    EndMessage -> Start [label="Sistem Sıfırlanır"];
+}
