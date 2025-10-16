@@ -1,0 +1,97 @@
+digraph Shopping_Cart_Flowchart {
+    // Grafik ayarları
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial"];
+
+    // Başlangıç ve Kullanıcı Girişi
+    LoginPrompt [label="1. Lütfen giriş yapınız.", shape=ellipse, style=filled, fillcolor=khaki];
+    CheckLogin [label="2. Kullanıcı giriş yaptı mı?", shape=diamond, style=filled, fillcolor=lightyellow];
+    InitCart [label="3. sepet = boş"];
+
+    // Ürün Gezinme ve Ekleme
+    ShowCategories [label="4. Kategorileri göster\n(Sepet için 0'a bas)"];
+    CategoryChoice [label="5. Sepete mi gidilecek?", shape=diamond, style=filled, fillcolor=lightyellow];
+    ListProducts [label="6. Kategori ürünlerini listele"];
+    ProductChoice [label="7. Ürün seç / Üst menüye dön"];
+    CheckProductChoice [label="8. Üst menü mü seçildi?", shape=diamond, style=filled, fillcolor=lightyellow];
+    CheckStock [label="9. Stoğu kontrol et"];
+    IsStockAvailable [label="10. Stok var mı?", shape=diamond, style=filled, fillcolor=lightyellow];
+    AddToCart [label="11. Ürünü sepete ekle"];
+    OutOfStockMsg [label="Stokta Yok!", shape=box, style=filled, fillcolor=moccasin];
+
+    // Sepet ve Ödeme Başlangıcı
+    ViewCart [label="12. Sepeti ve toplamı göster"];
+    AskCheckout [label="13. Alışverişe devam mı, ödeme mi?"];
+    CheckCheckout [label="14. Ödemeye mi geçilecek?", shape=diamond, style=filled, fillcolor=lightyellow];
+
+    // İndirim, Minimum Tutar ve Kargo
+    AskDiscount [label="15. İndirim kodu var mı?", shape=diamond, style=filled, fillcolor=lightyellow];
+    EnterDiscount [label="16. Kodu giriniz"];
+    ValidateDiscount [label="17. Kodu kontrol et"];
+    IsDiscountValid [label="18. Kod geçerli mi?", shape=diamond, style=filled, fillcolor=lightyellow];
+    ApplyDiscount [label="İndirimi Uygula"];
+    InvalidDiscountMsg [label="Geçersiz Kod", shape=box, style=filled, fillcolor=moccasin];
+    CheckMinTotal [label="19. Sepet tutarı >= 50 TL mi?", shape=diamond, style=filled, fillcolor=lightyellow];
+    MinTotalError [label="20. Minimum sepet tutarı 50 TL olmalı!", shape=box, style=filled, fillcolor=salmon];
+    SetShipping [label="21. kargo_ucreti = 20 TL"];
+    CheckFreeShipping [label="22. sepet_toplami >= 200 TL mi?", shape=diamond, style=filled, fillcolor=lightyellow];
+    SetFreeShipping [label="kargo_ucreti = 0"];
+    
+    // Sipariş Onay
+    CalculateTotal [label="23. Genel toplamı hesapla"];
+    ShowTotal [label="24. Toplam tutarı göster"];
+    ChoosePayment [label="25. Ödeme yöntemi seç"];
+    ConfirmOrder [label="26. Siparişi onayla?", shape=diamond, style=filled, fillcolor=lightyellow];
+    ProcessOrder [label="27. Siparişi kaydet, stokları güncelle"];
+    OrderSuccess [label="28. Sipariş Başarılı!", shape=ellipse, style=filled, fillcolor=lightgreen];
+
+    // Oklar (Akış Yönleri)
+    LoginPrompt -> CheckLogin;
+    CheckLogin:e -> InitCart [label="Evet"];
+    CheckLogin:w -> LoginPrompt:w [label="Hayır"];
+    InitCart -> ShowCategories;
+
+    ShowCategories -> CategoryChoice;
+    CategoryChoice -> ListProducts [label="Hayır (Kategori Seçti)"];
+    CategoryChoice -> ViewCart [label="Evet (0'a bastı)"];
+    ListProducts -> ProductChoice;
+    ProductChoice -> CheckProductChoice;
+    CheckProductChoice -> ShowCategories [label="Evet (9'a bastı)"];
+    CheckProductChoice -> CheckStock [label="Hayır (Ürün Seçti)"];
+    
+    CheckStock -> IsStockAvailable;
+    IsStockAvailable -> AddToCart [label="Evet", color=green];
+    IsStockAvailable -> OutOfStockMsg [label="Hayır", color=red];
+    OutOfStockMsg -> ShowCategories;
+    AddToCart -> ShowCategories;
+
+    ViewCart -> AskCheckout;
+    AskCheckout -> CheckCheckout;
+    CheckCheckout -> ShowCategories [label="Hayır (Devam Et)"];
+    CheckCheckout -> AskDiscount [label="Evet (Ödemeye Geç)"];
+
+    AskDiscount -> EnterDiscount [label="Evet"];
+    AskDiscount -> CheckMinTotal [label="Hayır", style=dashed];
+    EnterDiscount -> ValidateDiscount;
+    ValidateDiscount -> IsDiscountValid;
+    IsDiscountValid -> ApplyDiscount [label="Geçerli", color=green];
+    IsDiscountValid -> InvalidDiscountMsg [label="Geçersiz", color=red];
+    InvalidDiscountMsg -> AskDiscount;
+    ApplyDiscount -> CheckMinTotal;
+
+    CheckMinTotal -> SetShipping [label="Evet", color=green];
+    CheckMinTotal -> MinTotalError [label="Hayır", color=red];
+    MinTotalError -> ShowCategories;
+    
+    SetShipping -> CheckFreeShipping;
+    CheckFreeShipping -> SetFreeShipping [label="Evet"];
+    CheckFreeShipping -> CalculateTotal [label="Hayır"];
+    SetFreeShipping -> CalculateTotal;
+    
+    CalculateTotal -> ShowTotal -> ChoosePayment -> ConfirmOrder;
+    ConfirmOrder -> ProcessOrder [label="Evet", color=green];
+    ConfirmOrder -> ViewCart [label="Hayır", color=red];
+    ProcessOrder -> OrderSuccess;
+    OrderSuccess -> LoginPrompt [label="Yeni Oturum"];
+}
