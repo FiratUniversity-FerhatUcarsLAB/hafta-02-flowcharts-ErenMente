@@ -57,4 +57,5 @@
 
 25-)"İyi günler." git 1.
 
+
 ![splurge](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExazZycGRrb3k0MXBwbnJibG5nOGRyYmI4Z2d3a2RtazNwOXk5MHlybSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/1APhDggUPlkRdK5w1n/200.webp)
