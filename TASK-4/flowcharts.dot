@@ -1,0 +1,101 @@
+Muhammet Eren Mente
+öğr no:250542026
+
+  digraph Course_Registration_Flowchart {
+    // Grafik ayarları
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial"];
+
+    // --- Giriş ve Başlangıç ---
+    Login [label="1. Öğrenci No ve Şifre Gir", shape=ellipse, style=filled, fillcolor=khaki];
+    CheckLogin [label="2. Giriş Başarılı mı?", shape=diamond, style=filled, fillcolor=lightyellow];
+    Initialize [label="3. Seçilen Dersleri ve Krediyi Sıfırla"];
+    
+    // --- Ana Menü ---
+    MainMenu [label="4. Ders Listesini ve Seçilenleri Göster", style=filled, fillcolor=beige];
+    ActionChoice [label="5. İşlem Seç\n1-Ekle | 2-Bırak | 3-Tamamla", shape=diamond, style=filled, fillcolor=lightyellow];
+
+    // --- Ders Ekleme Modülü ---
+    subgraph cluster_AddCourse {
+        label = "Ders Ekleme Modülü";
+        style=filled;
+        color=lightgrey;
+        node [fillcolor=azure];
+
+        EnterCourseCode [label="7. Eklenecek Ders Kodunu Gir"];
+        CheckQuota [label="8. Kota Kontrolü", shape=diamond];
+        CheckPrerequisite [label="11. Ön Koşul Kontrolü", shape=diamond];
+        CheckConflict [label="13. Zaman Çakışması Kontrolü", shape=diamond];
+        CheckCreditLimit [label="15. Kredi Limiti Kontrolü (<=35)", shape=diamond];
+        AddCourse [label="16. Dersi Listeye Ekle"];
+        UpdateCredit [label="17. Toplam Krediyi Güncelle"];
+        AddSuccessMsg [label="18. Ders Başarıyla Eklendi"];
+        
+        // Hata Mesajları
+        QuotaFail [label="Kota Dolu", shape=box, style=filled, fillcolor=moccasin];
+        PrereqFail [label="Ön Koşul Sağlanmadı", shape=box, style=filled, fillcolor=moccasin];
+        ConflictFail [label="Ders Saatleri Çakışıyor", shape=box, style=filled, fillcolor=moccasin];
+        CreditFail [label="Kredi Limiti Aşıldı", shape=box, style=filled, fillcolor=moccasin];
+    }
+
+    // --- Ders Bırakma Modülü ---
+    subgraph cluster_DropCourse {
+        label = "Ders Bırakma Modülü";
+        style=filled;
+        color=lightgrey;
+        node [fillcolor=honeydew];
+        
+        ShowSelectedCourses [label="20. Seçilen Dersleri Göster"];
+        EnterDropCode [label="21. Bırakılacak Dersi Gir"];
+        DropCourse [label="22. Dersi Listeden Çıkar, Krediyi Güncelle"];
+        DropSuccessMsg [label="23. Ders Bırakıldı"];
+    }
+
+    // --- Kayıt Tamamlama Modülü ---
+    CheckGPA [label="24. GNO Kontrolü", shape=diamond, style=filled, fillcolor=lightgoldenrodyellow];
+    NeedsAdvisorApproval [label="26. Danışman Onayına Gönderildi", shape=box, style=filled, fillcolor=orange];
+    RegistrationComplete [label="27. Kayıt Başarıyla Tamamlandı", shape=box, style=filled, fillcolor=lightgreen];
+    ShowSummary [label="28. Kayıt Özetini Göster"];
+    Logout [label="29. Oturum Kapatıldı", shape=ellipse, style=filled, fillcolor=khaki];
+
+    // --- Akış Okları ---
+    // Giriş ve Menü
+    Login -> CheckLogin;
+    CheckLogin:s -> Initialize [label="Evet"];
+    CheckLogin:w -> Login:w [label="Hayır"];
+    Initialize -> MainMenu;
+    MainMenu -> ActionChoice;
+    ActionChoice -> EnterCourseCode [label="1-Ekle"];
+    ActionChoice -> ShowSelectedCourses [label="2-Bırak"];
+    ActionChoice -> CheckGPA [label="3-Tamamla"];
+
+    // Ders Ekleme Akışı (Başarılı Yol)
+    EnterCourseCode -> CheckQuota;
+    CheckQuota -> CheckPrerequisite [label="Kota Var", color=green];
+    CheckPrerequisite -> CheckConflict [label="Ön Koşul Tamam", color=green];
+    CheckConflict -> CheckCreditLimit [label="Çakışma Yok", color=green];
+    CheckCreditLimit -> AddCourse [label="Limit OK", color=green];
+    AddCourse -> UpdateCredit -> AddSuccessMsg -> MainMenu;
+
+    // Ders Ekleme Akışı (Hatalı Yollar)
+    CheckQuota -> QuotaFail [label="Kota Dolu", color=red];
+    QuotaFail -> MainMenu;
+    CheckPrerequisite -> PrereqFail [label="Ön Koşul Eksik", color=red];
+    PrereqFail -> MainMenu;
+    CheckConflict -> ConflictFail [label="Çakışma Var", color=red];
+    ConflictFail -> MainMenu;
+    CheckCreditLimit -> CreditFail [label="Limit Aşıldı", color=red];
+    CreditFail -> MainMenu;
+
+    // Ders Bırakma Akışı
+    ShowSelectedCourses -> EnterDropCode -> DropCourse -> DropSuccessMsg -> MainMenu;
+    
+    // Kayıt Tamamlama Akışı
+    CheckGPA -> NeedsAdvisorApproval [label="GNO < 2.5"];
+    CheckGPA -> RegistrationComplete [label="GNO >= 2.5"];
+    NeedsAdvisorApproval -> ShowSummary;
+    RegistrationComplete -> ShowSummary;
+    ShowSummary -> Logout;
+    Logout -> Login [label="Yeni Oturum"];
+}
