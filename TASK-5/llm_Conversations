@@ -1,0 +1,175 @@
+tacağım son görevide diğerleri gibi pseudo kodunu oluştur
+
+Görev 5: Akıllı Ev Güvenlik Sistemi
+
+Sistem Açıklaması
+
+IoT tabanlı bir akıllı ev güvenlik sisteminin alarm ve bildirim süreçlerini modelleyin.
+
+Sistem Gereksinimleri:
+
+Sistem aktif kontrolü (gereklilik)
+
+Sensör okuma döngüsü (döngü - sürekli)
+
+Hareket sensörü kontrolü (gereklilik)
+
+Kapı/pencere sensörü kontrolü (gereklilik)
+
+Kamera aktivasyonu (gereklilik)
+
+Yanlış alarm kontrolü (Ev sahibi evde mi?) (gereklilik)
+
+Alarm seviyesi ayarı (1-düşük, 2-orta, 3-yüksek) (gereklilik)
+
+Bildirim gönderme (SMS + Uygulama + E-posta)
+
+Bekle ve tekrar kontrol et (gereklilik)
+
+Alarmı sıfırla veya devam ettir (gereklilik)
+
+Elbette, anlaşıldı. Önceki görevlerin formatına ve mantığına uygun olarak, Akıllı Ev Güvenlik Sistemi için istenen tüm gereksinimleri karşılayan pseudocode'u aşağıda hazırladım.
+
+Görev 5: Akıllı Ev Güvenlik Sistemi Pseudocode'u
+1-)*Sistem_aktif_mi? Evet ise git 2, Hayır ise bekle ve git 1.*
+
+2-)*Sensörleri oku (sürekli döngü).*
+
+3-)*Eğer **hareket_algilandi** == Evet VEYA **kapi_pencere_acik** == Evet git 4, değilse git 2.*
+
+4-)*Kameraları aktive et ve kayıt başlat.*
+
+5-)*Ev sahibinin konumu kontrol et.*
+
+6-)*Eğer **ev_sahibi_evde_mi** == Evet git 7, değilse git 8.*
+
+7-)"Yanlış alarm. Sistem normal moda dönüyor." *git 2.*
+
+8-)*Alarm seviyesini ayarla (1-Düşük, 2-Orta, 3-Yüksek).*
+
+9-)*Belirlenen seviyeye göre bildirimleri gönder (SMS, Uygulama, E-posta).*
+
+10-)*30 saniye bekle.*
+
+11-)*Sensörleri tekrar kontrol et.*
+
+12-)*Eğer **tehdit_devam_ediyor_mu** == Hayır git 13, değilse git 14.*
+
+13-)"Tehdit ortadan kalktı. Alarm sıfırlanıyor." *git 2.*
+
+14-)*Alarmı devam ettir (Siren çal, yetkililere haber ver).*
+
+15-)*Kullanıcıdan sistemi devre dışı bırakma komutu bekle.*
+
+16-)*Eğer **devre_disi_birak_komutu** == Evet git 17, değilse git 15.*
+
+17-)"Sistem kullanıcı tarafından devre dışı bırakıldı. Normal moda dönülüyor." *git 2.*
+dot diline çevir
+
+Elbette, akıllı ev güvenlik sisteminin bu döngüsel ve koşullu mantığını, Graphviz'de görselleştirebileceğin DOT diline çevirdim.
+
+Bu şema, sistemin sürekli olarak sensörleri nasıl okuduğunu, bir tehdit algıladığında hangi adımları izlediğini (yanlış alarm kontrolü, bildirim, tekrar kontrol) ve tehdit durumuna göre nasıl farklı yollara saptığını net bir şekilde gösterir.
+
+Aşağıdaki kodun tamamını kopyalayıp Graphviz Online gibi bir siteye yapıştırarak akış şemanızı oluşturabilirsiniz.
+
+DOT Dili Kodu
+Kod snippet'i
+digraph SmartHome_Security_Flowchart {
+    // Grafik ayarları
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial"];
+
+    // --- Başlangıç ve Ana Döngü ---
+    IsSystemActive [label="1. Sistem Aktif mi?", shape=diamond, style=filled, fillcolor=khaki];
+    ReadSensors [label="2. Sensörleri Oku (Sürekli Döngü)", style=filled, fillcolor=beige];
+    DetectThreat [label="3. Tehdit Algılandı mı?\n(Hareket veya Kapı/Pencere)", shape=diamond, style=filled, fillcolor=lightyellow];
+
+    // --- Tehdit Müdahale Süreci ---
+    ActivateCameras [label="4. Kameraları Aktive Et"];
+    CheckOwnerLocation [label="5. Ev Sahibinin Konumunu Kontrol Et"];
+    IsOwnerHome [label="6. Ev Sahibi Evde mi? (Yanlış Alarm)", shape=diamond, style=filled, fillcolor=lightyellow];
+    FalseAlarm [label="7. Yanlış Alarm! Sıfırla.", shape=box, style=filled, fillcolor=lightgreen];
+    
+    // --- Gerçek Alarm Süreci ---
+    SetAlarmLevel [label="8. Alarm Seviyesini Ayarla (1-2-3)"];
+    SendNotifications [label="9. Bildirim Gönder (SMS, App, E-posta)"];
+    Wait30s [label="10. 30 Saniye Bekle", shape=ellipse, style=dashed];
+    RecheckSensors [label="11. Sensörleri Tekrar Kontrol Et"];
+    IsThreatOngoing [label="12. Tehdit Devam Ediyor mu?", shape=diamond, style=filled, fillcolor=orange];
+    ThreatGone [label="13. Tehdit Ortadan Kalktı. Sıfırla.", shape=box, style=filled, fillcolor=lightgreen];
+    EscalateAlarm [label="14. Alarmı Yükselt (Siren, Yetkililer)", shape=box, style=filled, fillcolor=salmon];
+    
+    // --- Manuel Müdahale ---
+    WaitForUser [label="15. Kullanıcı Komutu Bekle", style=dashed, shape=ellipse];
+    CheckDisableCmd [label="16. Devre Dışı Bırakıldı mı?", shape=diamond, style=filled, fillcolor=lightyellow];
+    SystemDisabled [label="17. Sistem Devre Dışı Bırakıldı. Sıfırla.", shape=box, style=filled, fillcolor=lightgreen];
+
+    // --- Akış Okları ---
+    // Ana Döngü
+    IsSystemActive -> ReadSensors [label="Evet"];
+    IsSystemActive -> IsSystemActive [label="Hayır"];
+    ReadSensors -> DetectThreat;
+    DetectThreat -> ReadSensors [label="Hayır (Güvende)"];
+    
+    // Tehdit Algılama ve Yanlış Alarm Kontrolü
+    DetectThreat -> ActivateCameras [label="Evet (Tehdit Var!)", color=red];
+    ActivateCameras -> CheckOwnerLocation;
+    CheckOwnerLocation -> IsOwnerHome;
+    IsOwnerHome -> FalseAlarm [label="Evet", color=green];
+    IsOwnerHome -> SetAlarmLevel [label="Hayır (Gerçek Tehdit!)", color=red];
+    FalseAlarm -> ReadSensors;
+
+    // Gerçek Alarm Akışı
+    SetAlarmLevel -> SendNotifications -> Wait30s -> RecheckSensors -> IsThreatOngoing;
+    IsThreatOngoing -> ThreatGone [label="Hayır", color=green];
+    IsThreatOngoing -> EscalateAlarm [label="Evet", color=red];
+    ThreatGone -> ReadSensors;
+    
+    // Manuel Müdahale Akışı
+    EscalateAlarm -> WaitForUser;
+    WaitForUser -> CheckDisableCmd;
+    CheckDisableCmd -> WaitForUser [label="Hayır"];
+    CheckDisableCmd -> SystemDisabled [label="Evet"];
+    SystemDisabled -> ReadSensors;
+}
+Bu algoritmanın açıklamasını yaz
+
+Elbette, bu akıllı ev güvenlik sistemi algoritmasının çalışma mantığını anlatalım.
+
+Akıllı Ev Güvenlik Algoritmasının Açıklaması
+Bu algoritma, panik yapmadan önce düşünen, akıllı bir dijital güvenlik görevlisi gibi çalışır. Temel amacı, bir tehdit algıladığında durumu aşamalı olarak ve akıllı filtreler kullanarak yönetmektir.
+
+Bölüm 1: Sürekli Gözetim - "Nöbetteki Göz" (Adım 1-2)
+Sistemin kalbi, aktif olduğu sürece sürekli çalışan bir sensör okuma döngüsüdür. Tıpkı bir bekçinin sürekli etrafı kolaçan etmesi gibi, sistem de herhangi bir hareket veya kapı/pencere açılması olup olmadığını durmaksızın kontrol eder. Her şey normalse, bu sessiz ve verimli döngüde kalır.
+
+Bölüm 2: İlk Müdahale - "Bu Gerçek mi?" Filtresi (Adım 3-7)
+Bir anormallik (tehdit) algılandığı anda sistem hemen sirenleri çalmaz. Bunun yerine, en akıllı adımını atar:
+
+Kanıt Toplama: Önce kameraları aktive ederek ne olduğunu kaydetmeye başlar (Adım 4).
+
+Yanlış Alarm Kontrolü: En kritik filtresini çalıştırır: Ev sahibi evde mi? (Adım 5-6). Bu kontrol, evcil hayvanların veya ev sahibinin kendisinin neden olduğu yanlış alarmları anında eleyerek gereksiz panik ve müdahaleyi önler. Eğer ev sahibi evdeyse, durumu "yanlış alarm" olarak işaretler ve normal gözetleme moduna geri döner.
+
+Bölüm 3: Aşamalı Müdahale - "Bekle ve Tekrar Bak" Mantığı (Adım 8-13)
+Eğer tehdidin gerçek olduğu doğrulanırsa (ev sahibi evde değilse), sistem yine de hemen en üst seviyeye geçmez:
+
+İlk Uyarı: Durumun ciddiyetine göre bir alarm seviyesi belirler ve sahiplerine çeşitli kanallardan (SMS, Uygulama) hemen bildirim gönderir (Adım 8-9).
+
+Soğukkanlı Bekleyiş: Ardından, kısa bir süre (örneğin 30 saniye) bekler (Adım 10).
+
+İkinci Kontrol: Bu bekleme süresinin sonunda sensörleri tekrar kontrol eder (Adım 11). Bu "bekle ve tekrar bak" mantığı, yoldan geçen bir arabanın farı gibi anlık ve geçici durumlar için alarmın büyümesini engeller. Tehdit ortadan kalktıysa, alarmı sıfırlar ve normal döngüye döner.
+
+Bölüm 4: Alarmın Yükseltilmesi ve Manuel Kontrol (Adım 14-17)
+Eğer tehdit ikinci kontrolden sonra hala devam ediyorsa, sistem artık durumun kalıcı ve ciddi olduğuna karar verir.
+
+Müdahaleyi Artırma: Alarmı bir üst seviyeye taşır; örneğin sirenleri çalar veya yetkililere otomatik bildirim gönderir (Adım 14).
+
+Kontrolü Devretme: Bu en üst aşamadan sonra sistem, durumu sıfırlamak için artık bir insanın, yani kullanıcının müdahalesini bekler (Adım 15-17).
+
+Her senaryonun sonunda (yanlış alarm, tehdidin geçmesi veya kullanıcının sistemi kapatması), algoritmanın tek bir hedefi vardır: tekrar en başa, yani sürekli gözetim döngüsüne geri dönmek.
+
+maks 4 satır olsun
+
+Elbette, işte akıllı ev güvenlik sisteminin algoritma mantığının en fazla 4 satırlık özeti:
+
+Sistem, aktifken sürekli bir sensör izleme döngüsünde çalışır ve bir anormallik algıladığında hemen kameraları aktive eder. İlk olarak, ev sahibinin konumunu kontrol ederek yanlış alarmları akıllıca eler; tehdit gerçekse sahiplerine bildirim gönderir. Kısa bir beklemenin ardından sensörleri tekrar kontrol eder; tehdit devam ediyorsa sireni çalarak veya yetkilileri uyararak alarmı bir üst seviyeye taşır. Tüm senaryoların sonunda (tehdit geçince, yanlış alarmda veya kullanıcı müdahalesinde) sistem her zaman başlangıçtaki güvenli gözetim döngüsüne geri döner.
